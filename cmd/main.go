@@ -2,10 +2,14 @@ package main
 
 import (
 	"classic_movies/handlers"
+	"database/sql"
+	"fmt"
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
 )
 
 func securityHeaders(c *gin.Context) {
@@ -26,11 +30,21 @@ func securityHeaders(c *gin.Context) {
 	c.Header("Permissions-Policy", "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self),payment=()")
 	c.Next()
 }
+
 func main() {
 	// load .env
 	handlers.LoadEnv()
 
 	r := gin.Default()
+
+	pool, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal("Error opening database connection")
+	} else {
+		fmt.Println("Database connection successful")
+	}
+
+	defer pool.Close()
 
 	// Security headers
 	r.Use(securityHeaders)
