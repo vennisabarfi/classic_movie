@@ -1,3 +1,5 @@
 env
 cmd/tmp/
 .env 
+fly.toml
+cmd/node_modules/
